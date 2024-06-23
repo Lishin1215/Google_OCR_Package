@@ -1,7 +1,7 @@
 
 # Imports the Google Cloud client library
 from google.cloud import vision
-
+import io
 
 
 def run_quickstart() -> vision.EntityAnnotation:
@@ -10,21 +10,30 @@ def run_quickstart() -> vision.EntityAnnotation:
     # Instantiates a client
     client = vision.ImageAnnotatorClient()
 
-    # The URI of the image file to annotate
-    file_uri = "gs://cloud-samples-data/vision/label/wakeupcat.jpg"
+    # The path of the image file to annotate
+    file_path = "assests/Referral_letter_example.jpg"
 
-    image = vision.Image()
-    image.source.image_uri = file_uri
+    # The URI of the image file to annotate
+    # file_uri = "gs://cloud-samples-data/vision/label/wakeupcat.jpg"
+
+    # Loads the image into memory
+    with io.open(file_path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = vision.Image(content=content)
+    # image.source.image_uri = file_uri
 
     # Performs label detection on the image file
-    response = client.label_detection(image=image)
-    labels = response.label_annotations
+    response = client.text_detection(image=image)
+    texts = response.text_annotations
 
-    print("Labels:")
-    for label in labels:
-        print(label.description)
+    print("Texts:")
+    # for text in texts:
+        # print(text.description)
+        # print("=============================")
+    print(texts[0].description)
 
-    return labels
+    return texts[0].description
 
 if __name__ == "__main__":
     run_quickstart()
